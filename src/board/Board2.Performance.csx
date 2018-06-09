@@ -12,15 +12,16 @@ using BenchmarkDotNet.Running;
 class Test {
 
     /*
- Method | Count |        Mean |      Error |     StdDev |   Gen 0 | Allocated |
-------- |------ |------------:|-----------:|-----------:|--------:|----------:|
-  Game1 |    10 |  2,184.7 ns |  48.513 ns |  74.085 ns |  0.9003 |    2840 B |
-  Game2 |    10 |    239.6 ns |   1.904 ns |   1.781 ns |  0.0458 |     144 B |
-  Game3 |    10 |    506.5 ns |   2.215 ns |   1.964 ns |  0.1974 |     624 B |
-  Game1 |   100 | 98,526.3 ns | 681.977 ns | 637.922 ns | 28.3203 |   89336 B |
-  Game2 |   100 |  2,486.9 ns |  20.136 ns |  16.815 ns |  0.1564 |     504 B |
-  Game3 |   100 |  9,821.7 ns | 195.596 ns | 381.495 ns |  7.4005 |   23304 B |
-
+ Method | Count |        Mean |        Error |       StdDev |   Gen 0 | Allocated |
+------- |------ |------------:|-------------:|-------------:|--------:|----------:|
+  Game1 |    10 |  1,979.8 ns |    14.252 ns |    12.634 ns |  0.9003 |    2840 B |
+  Game2 |    10 |    239.0 ns |     4.638 ns |     6.502 ns |  0.0458 |     144 B |
+  Game3 |    10 |    500.2 ns |    10.758 ns |    10.063 ns |  0.1974 |     624 B |
+  Game4 |    10 |    177.6 ns |     3.444 ns |     3.383 ns |  0.0432 |     136 B |
+  Game1 |   100 | 95,774.9 ns | 2,171.834 ns | 2,501.087 ns | 28.3203 |   89336 B |
+  Game2 |   100 |  2,352.8 ns |    10.296 ns |     9.631 ns |  0.1564 |     504 B |
+  Game3 |   100 |  9,388.6 ns |   195.789 ns |   508.882 ns |  7.4005 |   23304 B |
+  Game4 |   100 |  1,511.7 ns |    11.236 ns |     9.960 ns |  0.1564 |     496 B |
      */
 
     [Params(10, 100)]
@@ -48,6 +49,7 @@ class Test {
         return players.Last();
     }
 
+
     [Benchmark]
     public int Game3() {
         var players = Enumerable.Range(1, Count).ToList().ToArray();
@@ -73,13 +75,40 @@ class Test {
         return newIndicesArray;
     }
 
+    [Benchmark]
+    public int Game4() {
+        var players = new LL(Enumerable.Range(1, Count).ToArray());
+        var index = 0;
+        while (players.Size() > 1) {
+            index = (index + 1) % players.Size();
+            players.RemoveAt(index);
+        }
+        return players.Last();
+    }
+
+    private void RemoveAt(int[] source, int index) {
+        Array.Copy(source, index + 1, source, index, source.Length - index + 1);
+    }
+
 }
 
-/*
+class LL {
+    int[] array;
+    int size = 0;
+    public LL(int[] array) {
+        this.array = array;
+        this.size = array.Length;
+    }
+    public void RemoveAt(int index) {
+        Array.Copy(array, index + 1, array, index, size - index - 1);
+        size--;
+    }
+    public int Size() => size;
+    public int Last() => array.ElementAt(size - 1);
+}
+
 var t = new Test();
-Console.WriteLine(t.Game1());
-Console.WriteLine(t.Game2());
-Console.WriteLine(t.Game3());
-*/
+t.Count = 10;
+Console.WriteLine(t.Game4());
 
 BenchmarkRunner.Run<Test>();
