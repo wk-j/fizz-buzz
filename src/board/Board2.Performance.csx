@@ -6,6 +6,36 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Running;
 
+class LL {
+    int[] array;
+    int size = 0;
+    public LL(int[] array) {
+        this.array = array;
+        this.size = array.Length;
+    }
+    public void RemoveAt(int index) {
+        Array.Copy(array, index + 1, array, index, size - index - 1);
+        size--;
+    }
+    public int Size() => size;
+    public int Last() => array.ElementAt(size - 1);
+}
+
+class LL2 {
+    int[] array;
+    int size = 0;
+    public LL2(int[] array) {
+        this.array = array;
+        this.size = array.Length;
+    }
+    public void RemoveAt(ref int index) {
+        Array.Copy(array, index + 1, array, index, size - index - 1);
+        size--;
+    }
+    public ref int Size() => ref size;
+    public ref int Last() => ref array[size - 1];
+}
+
 
 [MemoryDiagnoser]
 [InProcess]
@@ -22,13 +52,14 @@ class Test {
   Game2 |   100 |  2,352.8 ns |    10.296 ns |     9.631 ns |  0.1564 |     504 B |
   Game3 |   100 |  9,388.6 ns |   195.789 ns |   508.882 ns |  7.4005 |   23304 B |
   Game4 |   100 |  1,511.7 ns |    11.236 ns |     9.960 ns |  0.1564 |     496 B |
+
      */
 
     [Params(10, 100)]
     public int Count { set; get; }
 
     [Benchmark]
-    public int Game1() {
+    public int Where() {
         var players = Enumerable.Range(1, Count).ToList();
         var index = 0;
         while (players.Count() > 1) {
@@ -39,7 +70,7 @@ class Test {
     }
 
     [Benchmark]
-    public int Game2() {
+    public int ListRemoveAt() {
         var players = Enumerable.Range(1, Count).ToList();
         var index = 0;
         while (players.Count() > 1) {
@@ -51,7 +82,7 @@ class Test {
 
 
     [Benchmark]
-    public int Game3() {
+    public int NewArray() {
         var players = Enumerable.Range(1, Count).ToList().ToArray();
         var index = 0;
         while (players.Count() > 1) {
@@ -76,7 +107,7 @@ class Test {
     }
 
     [Benchmark]
-    public int Game4() {
+    public int CustomRemoveAt() {
         var players = new LL(Enumerable.Range(1, Count).ToArray());
         var index = 0;
         while (players.Size() > 1) {
@@ -86,29 +117,23 @@ class Test {
         return players.Last();
     }
 
-    private void RemoveAt(int[] source, int index) {
-        Array.Copy(source, index + 1, source, index, source.Length - index + 1);
+    [Benchmark]
+    public int CustomRefRemoveAt() {
+        var array = Enumerable.Range(1, Count).ToArray();
+        var players = new LL2(array);
+        var index = 0;
+        while (players.Size() > 1) {
+            index = (index + 1) % players.Size();
+            players.RemoveAt(ref index);
+        }
+        return players.Last();
     }
-
 }
 
-class LL {
-    int[] array;
-    int size = 0;
-    public LL(int[] array) {
-        this.array = array;
-        this.size = array.Length;
-    }
-    public void RemoveAt(int index) {
-        Array.Copy(array, index + 1, array, index, size - index - 1);
-        size--;
-    }
-    public int Size() => size;
-    public int Last() => array.ElementAt(size - 1);
-}
+
 
 var t = new Test();
-t.Count = 10;
-Console.WriteLine(t.Game4());
+t.Count = 100;
+Console.WriteLine(t.CustomRefRemoveAt());
 
 BenchmarkRunner.Run<Test>();
