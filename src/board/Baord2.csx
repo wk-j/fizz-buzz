@@ -9,6 +9,6 @@ int loop(List<int> players) {
     return players.Last();
 }
 
-var players = Enumerable.Range(1, 100).ToList();
+var players = Enumerable.Range(1, 10).ToList();
 var last = loop(players);
 Console.WriteLine(last);
