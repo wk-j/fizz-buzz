@@ -1,17 +1,16 @@
-let length = List.length
-let indexed= List.indexed
-let filter = List.filter
-let map = List.map
+let filteri (con: (int * 't) -> bool) (data: 't list) : 't list =
+    let mutable index = 0
+    [for item in data do
+        if con(index, item) then yield item
+        index <- index + 1
+    ]
 
-let rec find (players: int list) index =
-    if length players > 1 then
-        let newIndex = (index + 1) % length players
-        find
-            (indexed players |> filter (fun (i, _) -> i <> newIndex) |> map (fun (_, e) -> e))
-            newIndex
-    else
-        players.[0]
+let rec play players skip startIndex =
+    match players with
+    | [final] -> final
+    | remain ->
+        let skipIndex = (startIndex + skip) % List.length players
+        play (filteri (fun (i, _) -> i <> skipIndex) remain) skip skipIndex
 
-find ([1..100]) 0
+play [1..100] 1 0
 |> printfn "%A"
-
