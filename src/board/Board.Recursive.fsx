@@ -10,7 +10,8 @@ let rec play players skip startIndex =
     | [finalPlayer] -> finalPlayer
     | remain ->
         let skipIndex = (startIndex + skip) % List.length players
-        play (filteri (fun (i, _) -> i <> skipIndex) remain) skip skipIndex
+        let nextPlayer = filteri (fun (i, _) -> i <> skipIndex) remain
+        play nextPlayer skip skipIndex
 
 play [1..100] 1 0
 |> printfn "%A"
