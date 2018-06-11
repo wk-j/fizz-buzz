@@ -1,14 +1,11 @@
-int loop(List<int> players) {
-    var index = 0;
-    while (players.Count() > 1) {
-        Console.Write(string.Join(",", players));
-        Console.WriteLine("       (" + index);
-        index = (index + 1) % players.Count;
-        players = players.Where((e, i) => i != index).ToList();
+int play(List<int> players, int skip, int index) {
+    if (players.Count() == 1) {
+        return players.First();
+    } else {
+        var newIndex = (index + skip) % players.Count;
+        return play(players.Where((e, i) => i != newIndex).ToList(), skip, newIndex);
     }
-    return players.Last();
 }
-
-var players = Enumerable.Range(1, 10).ToList();
-var last = loop(players);
-Console.WriteLine(last);
+var players = Enumerable.Range(1, 100).ToList();
+var lastPlayer = play(players, 1, 0);
+Console.WriteLine(lastPlayer);
