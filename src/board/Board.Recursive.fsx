@@ -1,5 +1,5 @@
 
-let filteri (predicate: (int * 't) -> bool) data  =
+let filteri (predicate: (int * 'a) -> bool) data  =
     let mutable index = 0
     [for item in data do
         if predicate(index, item) then yield item
