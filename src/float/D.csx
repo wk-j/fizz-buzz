@@ -39,4 +39,6 @@ Console.WriteLine(ff);  // 1.234568E+29
 double dd = 123456789012345678901234567890d; //30 digits
 Console.WriteLine(dd); // 1.23456789012346E+29
 
+Console.WriteLine("0.1d {0}", 0.1d.ToString("F10"));
+
 WriteLine(ToBinaryString(1.1f));
