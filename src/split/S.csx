@@ -5,7 +5,8 @@ var size = (int)Math.Ceiling(text.Length / (double)part);
 
 var rs = text.Select((Value, Index) => new { Value, Index })
             .GroupBy(x => x.Index / size)
-            .Select(group => group.Select(x => x.Value).ToArray());
+            .Select(group => new String(group.Select(x => x.Value).ToArray()))
+            .ToArray();
 
 foreach (var item in rs) {
     Console.WriteLine(string.Join("", item));
