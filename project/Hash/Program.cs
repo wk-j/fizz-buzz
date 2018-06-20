@@ -8,6 +8,7 @@ namespace Hash
         {
             var h = "Hello";
             Console.WriteLine(h.GetHashCode());
+            Console.WriteLine(100.GetHashCode());
         }
     }
 }
