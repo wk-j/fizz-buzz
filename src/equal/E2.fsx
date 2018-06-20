@@ -20,4 +20,4 @@ let clean =
 
 let isEqual = (clean a) = (clean b)
 
-printfn "a = b : %b" isEqual
+printfn "%A" isEqual
