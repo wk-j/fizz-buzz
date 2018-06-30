@@ -1,0 +1,3 @@
+Get-WMIObject -Class Win32_ComputerSystemProduct | Select-Object -Property *
+Get-WMIObject -Class Win32_Process | Select-Object -Property *
+Get-WMIObject -Class Win32_Desktop | Select-Object -Property *
