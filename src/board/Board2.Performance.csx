@@ -1,6 +1,7 @@
 #! "netcoreapp2.1"
 #r "nuget:BenchmarkDotNet,0.10.14"
 
+using System.Collections.Generic;
 using BenchmarkDotNet;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
@@ -42,17 +43,20 @@ class LL2 {
 class Test {
 
     /*
- Method | Count |        Mean |        Error |       StdDev |   Gen 0 | Allocated |
-------- |------ |------------:|-------------:|-------------:|--------:|----------:|
-  Game1 |    10 |  1,979.8 ns |    14.252 ns |    12.634 ns |  0.9003 |    2840 B |
-  Game2 |    10 |    239.0 ns |     4.638 ns |     6.502 ns |  0.0458 |     144 B |
-  Game3 |    10 |    500.2 ns |    10.758 ns |    10.063 ns |  0.1974 |     624 B |
-  Game4 |    10 |    177.6 ns |     3.444 ns |     3.383 ns |  0.0432 |     136 B |
-  Game1 |   100 | 95,774.9 ns | 2,171.834 ns | 2,501.087 ns | 28.3203 |   89336 B |
-  Game2 |   100 |  2,352.8 ns |    10.296 ns |     9.631 ns |  0.1564 |     504 B |
-  Game3 |   100 |  9,388.6 ns |   195.789 ns |   508.882 ns |  7.4005 |   23304 B |
-  Game4 |   100 |  1,511.7 ns |    11.236 ns |     9.960 ns |  0.1564 |     496 B |
-
+                Method | Count |        Mean |         Error |        StdDev |      Median |   Gen 0 | Allocated |
+    ------------------ |------ |------------:|--------------:|--------------:|------------:|--------:|----------:|
+                 Where |    10 |  2,174.9 ns |    42.9008 ns |    94.1684 ns |  2,209.0 ns |  0.9003 |    2840 B |
+          ListRemoveAt |    10 |    243.6 ns |     4.8529 ns |     6.4784 ns |    241.9 ns |  0.0458 |     144 B |
+              NewArray |    10 |    541.0 ns |     5.7012 ns |     4.7607 ns |    541.9 ns |  0.1974 |     624 B |
+            LinkedList |    10 |  1,126.5 ns |     9.9108 ns |     9.2705 ns |  1,123.1 ns |  0.3624 |    1144 B |
+        CustomRemoveAt |    10 |    189.4 ns |     1.0838 ns |     1.0138 ns |    189.2 ns |  0.0432 |     136 B |
+     CustomRefRemoveAt |    10 |    152.3 ns |     0.6118 ns |     0.5423 ns |    152.3 ns |  0.0432 |     136 B |
+                 Where |   100 | 99,741.4 ns | 1,943.3637 ns | 2,908.7352 ns | 99,699.4 ns | 28.3203 |   89336 B |
+          ListRemoveAt |   100 |  2,426.2 ns |    37.5829 ns |    35.1551 ns |  2,422.9 ns |  0.1564 |     504 B |
+              NewArray |   100 |  9,031.2 ns |   204.8468 ns |   300.2618 ns |  8,924.3 ns |  7.4005 |   23304 B |
+            LinkedList |   100 | 21,479.0 ns |   426.5627 ns |   962.8232 ns | 21,245.0 ns |  3.2043 |   10144 B |
+        CustomRemoveAt |   100 |  1,553.9 ns |    23.0390 ns |    21.5507 ns |  1,543.2 ns |  0.1564 |     496 B |
+     CustomRefRemoveAt |   100 |  1,567.3 ns |    30.7178 ns |    45.0258 ns |  1,570.8 ns |  0.1564 |     496 B |
      */
 
     [Params(10, 100)]
@@ -107,6 +111,18 @@ class Test {
     }
 
     [Benchmark]
+    public int LinkedList() {
+        var players = new LinkedList<int>(Enumerable.Range(1, Count).ToArray());
+        var index = 0;
+        while (players.Count > 1) {
+            index = (index + 1) % players.Count;
+            var value = players.ElementAt(index);
+            players.Remove(value);
+        }
+        return players.Last();
+    }
+
+    [Benchmark]
     public int CustomRemoveAt() {
         var players = new LL(Enumerable.Range(1, Count).ToArray());
         var index = 0;
@@ -129,11 +145,5 @@ class Test {
         return players.Last();
     }
 }
-
-
-
-var t = new Test();
-t.Count = 100;
-Console.WriteLine(t.CustomRefRemoveAt());
 
 BenchmarkRunner.Run<Test>();
