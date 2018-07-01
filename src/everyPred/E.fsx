@@ -12,12 +12,15 @@ let products =
     [ { Stocked = true; Price = 85 }
       { Stocked = true; Price = 200} ]
 
+let Price  ({ Price = price }) = price
+let Stocked ({ Stocked = stocked }) = stocked
+
 let cheapInStock =
     products
     |> List.filter (everyPred
-             [(fun k -> k.Stocked)
-              (fun k -> isCheap k.Price)]
-    )
+              [ Stocked
+                Price >> isCheap
+    ])
 
 printfn "%A" cheapInStock
 
