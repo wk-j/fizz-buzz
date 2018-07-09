@@ -1,8 +1,8 @@
 string Add(string a, string b) {
     var max = a.Length > b.Length ? a.Length : b.Length;
-    var pa = a.PadLeft(max, '0');
-    var pb = b.PadLeft(max, '0');
-    var zip = pa.Zip(pb, (aa, bb) => (int.Parse(aa.ToString()), int.Parse(bb.ToString()))).Reverse();
+    var pa = a.PadLeft(max, '0').Select(x => Int32.Parse(x.ToString()));
+    var pb = b.PadLeft(max, '0').Select(x => Int32.Parse(x.ToString()));
+    var zip = pa.Zip(pb, (aa, bb) => (aa, bb)).Reverse();
     var (keep, result) = zip.Aggregate((0, ""), (acc, aabb) => {
         var ((k, ac), (aa, bb)) = (acc, aabb);
         var pad = $"{aa + bb + k}".PadLeft(2, '0');
