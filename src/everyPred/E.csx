@@ -7,7 +7,7 @@ var products = new[] {
 
 bool Cheap(int i) => i < 100;
 
-bool EveryPred<T>(T input, params Func<T, bool>[] preds) =>
-    preds.Aggregate(true, (acc, func) => acc && func(input));
+Func<T, bool> EveryPred<T>(params Func<T, bool>[] predicate) =>
+    (T input) => predicate.Aggregate(true, (acc, func) => acc && func(input));
 
-var cheapInStock = products.Where(x => EveryPred(x, k => k.Stocked, k => Cheap(k.Price)));
+var cheapInStock = products.Where(EveryPred(k => k.Stocked, k => Cheap(k.Price)));
