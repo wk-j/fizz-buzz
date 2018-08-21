@@ -13,3 +13,4 @@ publish
 
 .paket
 .fake
+*.exe
