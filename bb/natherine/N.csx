@@ -1,1 +1,1 @@
-Console.WriteLine("{0:F2}", (1 - Console.ReadLine().Split(" ").Select(float.Parse).Aggregate((a, x) => a / x)) * 100.0);
+Console.WriteLine("{0:F2}", (1 - Console.ReadLine().Split().Select(float.Parse).Aggregate((a, x) => a / x)) * 100f);
